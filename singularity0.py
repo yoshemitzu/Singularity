@@ -21,7 +21,6 @@ def fetch_feed(auth_token,feed_info):
     location,name = feed_info[0],feed_info[1]
     params = {"feed": f"at://{location}/app.bsky.feed.generator/{name}"}
     headers = {"Authorization": f"Bearer {auth_token}"}
-
     response = requests.get(FEED_URL, params=params, headers=headers)
     response.raise_for_status()
     return response.json()["feed"]
@@ -31,8 +30,11 @@ def filter_posts(posts,KEYWORDS):
     return [p for p in posts if any(k.lower() not in p['post']['record']['text'].lower() for k in KEYWORDS)]
 
 # feeds of interest
-feed_dict = {"newskies":["did:plc:wzsilnxf24ehtmmc3gssy5bu","newskies"]}
+feed_dict = {"newskies":["did:plc:wzsilnxf24ehtmmc3gssy5bu","newskies"],
+             "F+R":["did:plc:oio4hkxaop4ao4wz2pp3f4cr","follows-replies"]
+             }
 feed_info = feed_dict["newskies"]
+feed_info = feed_dict["F+R"]
 
 # Keywords to filter by
 KEYWORDS = ["music", "tech", "news"]
@@ -40,7 +42,10 @@ KEYWORDS = ["music", "tech", "news"]
 # Main function
 def main():
     auth_token = get_auth_token()
-    posts = fetch_feed(auth_token,feed_info)
+    posts = []
+    for feed_name in feed_dict:
+        feed_info = feed_dict[feed_name]
+        posts.extend(fetch_feed(auth_token,feed_info))
     filtered_posts = filter_posts(posts,KEYWORDS)
 
     for post in filtered_posts:
