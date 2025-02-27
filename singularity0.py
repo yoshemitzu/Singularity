@@ -26,22 +26,22 @@ def fetch_feed(auth_token,feed_info):
     response.raise_for_status()
     return response.json()["feed"]
 
-# Keywords to filter by
-KEYWORDS = ["music", "tech", "news"]
-
 # Filter posts by keywords
-def filter_posts(posts):
+def filter_posts(posts,KEYWORDS):
     return [p for p in posts if any(k.lower() not in p['post']['record']['text'].lower() for k in KEYWORDS)]
 
 # feeds of interest
 feed_dict = {"newskies":["did:plc:wzsilnxf24ehtmmc3gssy5bu","newskies"]}
 feed_info = feed_dict["newskies"]
 
+# Keywords to filter by
+KEYWORDS = ["music", "tech", "news"]
+
 # Main function
 def main():
     auth_token = get_auth_token()
     posts = fetch_feed(auth_token,feed_info)
-    filtered_posts = filter_posts(posts)
+    filtered_posts = filter_posts(posts,KEYWORDS)
 
     for post in filtered_posts:
         text = post["post"]["record"]["text"]
