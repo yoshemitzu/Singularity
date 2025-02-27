@@ -8,9 +8,6 @@ KEYWORDS = ["music", "tech", "news"]  # Example keywords
 client = Client()
 client.login(USERNAME, APP_PASSWORD)
 
-# Keywords to filter by
-KEYWORDS = ["music", "tech", "news"]
-
 # Base API URLs
 BGS_HOST = "https://bsky.social"
 AUTH_URL = f"{BGS_HOST}/xrpc/com.atproto.server.createSession"
@@ -32,9 +29,11 @@ def fetch_newskies_feed(auth_token):
     response.raise_for_status()
     return response.json()["feed"]
 
+# Keywords to filter by
+KEYWORDS = ["music", "tech", "news"]
+
 # Filter posts by keywords
 def filter_posts(posts):
-    return posts
     return [p for p in posts if any(k.lower() in p['post']['record']['text'].lower() for k in KEYWORDS)]
 
 # Main function
